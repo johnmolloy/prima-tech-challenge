@@ -95,7 +95,7 @@ resource "aws_iam_policy" "app_access" {
     Statement = [
       {
         Effect   = "Allow"
-        Action   = ["dynamodb:PutItem", "dynamodb:GetItem"]
+        Action   = ["dynamodb:PutItem", "dynamodb:GetItem", "dynamodb:Scan"]
         Resource = aws_dynamodb_table.app_state.arn
       },
       {

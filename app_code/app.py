@@ -36,14 +36,20 @@ def get_all_users():
 
         # Strip out password hash and ensure we don't include it
         safe_users = []
-        for user in users:
+for user in users:
+            image_key = user.get('profile_image_key')
+            avatar_url = None
+            
+            # If the user has an image, build the full AWS S3 URL
+            if image_key:
+                avatar_url = f"https://{s3_bucket}.s3.{region}.amazonaws.com/{image_key}"
+
             safe_users.append({
                 'id': user.get('id'),
                 'first_name': user.get('first_name'),
                 'last_name': user.get('last_name'),
                 'username': user.get('username'),
-                # Using .get() prevents crashes if a user was created before we added images
-                'profile_image_key': user.get('profile_image_key') 
+                'avatar_url': avatar_url # Serving the full URL instead of the raw key
             })
 
         # Return the sanitized list along with a count
