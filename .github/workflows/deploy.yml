@@ -155,3 +155,21 @@ jobs:
         # The -r flag scans recursively. 
         # The -lll flag tells it to only fail the pipeline on HIGH severity issues.
         run: bandit -r . -lll
+
+  # ---------------------------------------------------
+  # Dockerfile Linter (Runs in parallel)
+  # ---------------------------------------------------
+  lint-docker:
+    name: Hadolint Docker Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Run Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ./app_code/Dockerfile
+          # "error" means it fails on major violations (like running as root),
+          # but passes on minor warnings.
+          failure-threshold: error
