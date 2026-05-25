@@ -3,13 +3,13 @@ kind: Service
 metadata:
   name: {{ include "prima-tech-challenge.fullname" . }}
   labels:
-    {{- include "prima-tech-challenge.labels" . | nindent 4 }}
+    app: {{ include "prima-tech-challenge.name" . }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
       name: http
   selector:
-    {{- include "prima-tech-challenge.selectorLabels" . | nindent 4 }}
+    app: {{ include "prima-tech-challenge.name" . }}
