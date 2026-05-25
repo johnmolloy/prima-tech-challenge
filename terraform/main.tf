@@ -49,16 +49,35 @@ resource "random_id" "bucket_suffix" {
   byte_length = 4
 }
 
-# Security best practice: Block all public access by default
+# Make S3 bucket objects public
 resource "aws_s3_bucket_public_access_block" "app_data_access" {
   bucket = aws_s3_bucket.app_data.id
 
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
+  block_public_acls       = false
+  block_public_policy     = false
+  ignore_public_acls      = false
+  restrict_public_buckets = false
 }
 
+# Attach a policy granting public read access to all objects
+resource "aws_s3_bucket_policy" "public_read_access" {
+  bucket = aws_s3_bucket.app_data.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "PublicReadGetObject"
+        Effect    = "Allow"
+        Principal = "*"
+        Action    = "s3:GetObject"
+        Resource  = "${aws_s3_bucket.app_data.arn}/*"
+      }
+    ]
+  })
+
+  depends_on = [aws_s3_bucket_public_access_block.app_data_access]
+}
 
 # ---------------------------------------------------
 # Amazon DynamoDB Table
