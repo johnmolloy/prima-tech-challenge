@@ -85,22 +85,24 @@ resource "aws_dynamodb_table" "app_state" {
 }
 
 
-# 1. Create the IAM Policy for DynamoDB Access
+# 1. Create the IAM Policy for DynamoDB and S3 Access
 resource "aws_iam_policy" "dynamodb_access" {
   name        = "prima-flask-dynamodb-policy"
-  description = "Allows Flask app to write to the state table"
-
+  description = "Allows Flask app to write to DynamoDB and S3"
+  
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Effect = "Allow"
-        Action = [
-          "dynamodb:PutItem",
-          "dynamodb:GetItem"
-        ]
-        # References the table you created earlier
+        Effect   = "Allow"
+        Action   = ["dynamodb:PutItem", "dynamodb:GetItem"]
         Resource = aws_dynamodb_table.app_state.arn
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["s3:PutObject"]
+        # Notice the /* at the end to allow writing files inside the bucket
+        Resource = "${aws_s3_bucket.app_data.arn}/*" 
       }
     ]
   })
