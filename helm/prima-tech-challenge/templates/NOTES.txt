@@ -1,5 +1,5 @@
 1. Get the application URL by running these commands:
-{{- if .Values.httpRoute.enabled }}
+{{- if and .Values.httpRoute ( .Values.httpRoute.enabled ) }}
 {{- if .Values.httpRoute.hostnames }}
     export APP_HOSTNAME={{ .Values.httpRoute.hostnames | first }}
 {{- else }}
