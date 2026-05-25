@@ -89,7 +89,7 @@ resource "aws_dynamodb_table" "app_state" {
 resource "aws_iam_policy" "dynamodb_access" {
   name        = "prima-flask-dynamodb-policy"
   description = "Allows Flask app to write to DynamoDB and S3"
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -99,10 +99,10 @@ resource "aws_iam_policy" "dynamodb_access" {
         Resource = aws_dynamodb_table.app_state.arn
       },
       {
-        Effect   = "Allow"
-        Action   = ["s3:PutObject"]
+        Effect = "Allow"
+        Action = ["s3:PutObject"]
         # Notice the /* at the end to allow writing files inside the bucket
-        Resource = "${aws_s3_bucket.app_data.arn}/*" 
+        Resource = "${aws_s3_bucket.app_data.arn}/*"
       }
     ]
   })
