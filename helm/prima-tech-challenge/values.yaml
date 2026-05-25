@@ -1,0 +1,11 @@
+replicaCount: 2
+
+image:
+  repository: 111122223333.dkr.ecr.eu-north-1.amazonaws.com/prima-tech-challenge
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+service:
+  type: LoadBalancer
+  port: 80
+  targetPort: 5000
