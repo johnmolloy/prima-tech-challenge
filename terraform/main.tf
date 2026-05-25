@@ -26,13 +26,6 @@ resource "aws_s3_bucket_public_access_block" "app_data_access" {
   restrict_public_buckets = true
 }
 
-# Enable versioning for data protection
-resource "aws_s3_bucket_versioning" "app_data_versioning" {
-  bucket = aws_s3_bucket.app_data.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
 
 # ---------------------------------------------------
 # Amazon DynamoDB Table
