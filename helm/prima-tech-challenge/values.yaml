@@ -113,3 +113,9 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+# Application specific environment variables
+appConfig:
+  dynamoDbTable: "prima-user-db"
+  s3BucketName: "prima-tech-challenge-data-ff32d1ad"
+  pythonUnbuffered: "1"

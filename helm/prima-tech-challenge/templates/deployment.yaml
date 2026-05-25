@@ -44,6 +44,13 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          env:
+            - name: DYNAMODB_TABLE
+              value: {{ .Values.appConfig.dynamoDbTable | quote }}
+            - name: S3_BUCKET_NAME
+              value: {{ .Values.appConfig.s3BucketName | quote }}
+            - name: PYTHONUNBUFFERED
+              value: {{ .Values.appConfig.pythonUnbuffered | quote }}
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
