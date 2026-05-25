@@ -23,3 +23,8 @@ spec:
             - name: http
               containerPort: 5000
               protocol: TCP
+          env:
+            - name: DYNAMODB_TABLE
+              value: "prima-user-db"
+            - name: PYTHONUNBUFFERED
+              value: "1"

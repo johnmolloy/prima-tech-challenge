@@ -9,12 +9,12 @@ app = Flask(__name__)
 # 1. Initialize the DynamoDB resource
 # It uses the eu-west-1 region to match your Terraform setup
 dynamodb = boto3.resource('dynamodb', region_name=os.getenv('AWS_REGION', 'eu-west-1'))
-table_name = os.getenv('DYNAMODB_TABLE', 'prima-app-state')
+table_name = os.getenv('DYNAMODB_TABLE', 'prima-user-db')
 table = dynamodb.Table(table_name)
 
 @app.route('/')
 def hello_world():
-    return "Hello, Dockerized Flask!"
+    return "Hello John"
 
 # 2. Add the POST route
 @app.route('/users', methods=['POST'])
