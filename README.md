@@ -52,7 +52,9 @@ Once deployed, the Load Balancer URL is automatically retrieved and printed in t
 
 Also obviously would use HTTPS and a certificate, rather than http and port 80.
 
-In an ideal world I would also have created separate "dev" and "prod" values files. And perhaps even multiple dev environments, and/or UAT environment. Along with extra CI/CD pipeline stages for these.
+In an ideal world I would also have created separate "dev" and "prod" values files in the helm files. And perhaps even multiple dev environments, and/or UAT environment. Along with extra CI/CD pipeline stages for these.
+
+Likewise, the Terraform files are simplified, with no separate values files for dev and prod etc. And separated out variables file, modules etc. I just chose to use a single main/tf file for simplicity. I also kinda went against the instructions and made myself an EKS cluster. Fully aware of the costs, but my time is worth more really, and this felt like the quickest way to do it to get everything working and to test it. There's a folder nested inside the terrfarom directory, with the TF files I used to provision the EKS cluster. However I did this manually with the Terraform CLI from my local machine rather than via the Github actions pipeline.
 
 **Check System Health:**
 ```bash
