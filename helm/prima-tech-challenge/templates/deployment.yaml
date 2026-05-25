@@ -14,6 +14,7 @@ spec:
       labels:
         app: {{ include "prima-tech-challenge.name" . }}
     spec:
+      serviceAccountName: flask-app-sa
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

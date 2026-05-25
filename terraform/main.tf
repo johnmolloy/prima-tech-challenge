@@ -50,3 +50,52 @@ resource "aws_dynamodb_table" "app_state" {
     ManagedBy   = "Terraform"
   }
 }
+
+
+# 1. Create the IAM Policy for DynamoDB Access
+resource "aws_iam_policy" "dynamodb_access" {
+  name        = "prima-flask-dynamodb-policy"
+  description = "Allows Flask app to write to the state table"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem"
+        ]
+        # References the table you created earlier
+        Resource = aws_dynamodb_table.app_state.arn 
+      }
+    ]
+  })
+}
+
+# 2. Use the official AWS module to easily create the IRSA Role
+module "iam_eks_role" {
+  source    = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version   = "~> 5.0"
+  
+  role_name = "prima-flask-app-role"
+
+  # Attach the DynamoDB policy we just created
+  role_policy_arns = {
+    dynamodb = aws_iam_policy.dynamodb_access.arn
+  }
+
+  # Bind this role to a specific Kubernetes ServiceAccount via OIDC
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      # Format: "namespace:service-account-name"
+      namespace_service_accounts = ["default:flask-app-sa"]
+    }
+  }
+}
+
+# 3. Output the Role ARN so we can use it in Helm
+output "flask_irsa_role_arn" {
+  value = module.iam_eks_role.iam_role_arn
+}
