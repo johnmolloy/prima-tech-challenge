@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: 111122223333.dkr.ecr.eu-north-1.amazonaws.com/prima-tech-challenge
+  repository: REPLACE_ME_IN_CI_CD/prima-tech-challenge
   pullPolicy: IfNotPresent
   tag: "latest"
 
