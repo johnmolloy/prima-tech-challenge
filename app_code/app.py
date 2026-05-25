@@ -36,7 +36,7 @@ def get_all_users():
 
         # Strip out password hash and ensure we don't include it
         safe_users = []
-for user in users:
+        for user in users:
             image_key = user.get('profile_image_key')
             avatar_url = None
             
