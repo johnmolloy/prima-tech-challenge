@@ -77,13 +77,13 @@ jobs:
           # pipeline if you intentionally opened an S3 bucket for the challenge!
           soft_fail: true
 
-      # ---------------------------------------------------
-      # FinOps / Cloud Cost Estimation
-      # ---------------------------------------------------
-      - name: Setup Infracost
-        uses: infracost/actions/setup@v3
-        with:
-          api-key: ${{ secrets.INFRACOST_API_KEY }}
+    #   # ---------------------------------------------------
+    #   # FinOps / Cloud Cost Estimation
+    #   # ---------------------------------------------------
+    #   - name: Setup Infracost
+    #     uses: infracost/actions/setup@v3
+    #     with:
+    #       api-key: ${{ secrets.INFRACOST_API_KEY }}
 
       - name: Run Infracost
         working-directory: ./terraform
