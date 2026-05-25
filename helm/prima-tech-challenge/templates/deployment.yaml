@@ -27,6 +27,6 @@ spec:
             - name: DYNAMODB_TABLE
               value: "prima-user-db"
             - name: S3_BUCKET_NAME
-              value: "prima-tech-challenge-data-15bbf38f"
+              value: "prima-tech-challenge-data-ff32d1ad"
             - name: PYTHONUNBUFFERED
               value: "1"
