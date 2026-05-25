@@ -35,6 +35,8 @@ jobs:
 
       - name: Build, tag, and push Docker image
         id: build-image
+        # Tell the runner to execute the commands inside your app folder
+        working-directory: ./app_code
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
