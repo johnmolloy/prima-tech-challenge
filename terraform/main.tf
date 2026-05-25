@@ -1,3 +1,21 @@
+terraform {
+  backend "s3" {
+    bucket         = "prima-tf-state-094508075399"
+    key            = "app-infrastructure/terraform.tfstate" 
+    region         = "eu-west-1"
+    dynamodb_table = "prima-tf-lock"
+    encrypt        = true
+  }
+  
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 5.0"
+    }
+  }
+}
+
+
 # ---------------------------------------------------
 # Data Sources: Look up existing AWS infrastructure
 # ---------------------------------------------------
