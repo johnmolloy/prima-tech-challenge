@@ -85,9 +85,9 @@ jobs:
     #     with:
     #       api-key: ${{ secrets.INFRACOST_API_KEY }}
 
-      - name: Run Infracost
-        working-directory: ./terraform
-        run: infracost breakdown --path . --format table
+    #   - name: Run Infracost
+    #     working-directory: ./terraform
+    #     run: infracost breakdown --path . --format table
 
       - name: Terraform Plan
         working-directory: ./terraform
@@ -161,6 +161,10 @@ jobs:
   analyze-code:
     name: Bandit Security Scan
     runs-on: ubuntu-latest
+
+    env:
+        # Force all actions to use the updated Node 24 runtime to clear the deprecation warning
+        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     
     steps:
       - name: Checkout repository
@@ -186,6 +190,10 @@ jobs:
   lint-docker:
     name: Hadolint Docker Scan
     runs-on: ubuntu-latest
+
+    env:
+        # Force all actions to use the updated Node 24 runtime to clear the deprecation warning
+        FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
