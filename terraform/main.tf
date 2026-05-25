@@ -1,4 +1,19 @@
 # ---------------------------------------------------
+# Data Sources: Look up existing AWS infrastructure
+# ---------------------------------------------------
+data "aws_caller_identity" "current" {}
+
+data "aws_eks_cluster" "existing_cluster" {
+  name = "prima-eks-cluster"
+}
+
+# Dynamically construct the OIDC Provider ARN from the cluster data
+locals {
+  oidc_provider_url = replace(data.aws_eks_cluster.existing_cluster.identity[0].oidc[0].issuer, "https://", "")
+  oidc_provider_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/${local.oidc_provider_url}"
+}
+
+# ---------------------------------------------------
 # Amazon S3 Bucket
 # ---------------------------------------------------
 resource "aws_s3_bucket" "app_data" {
@@ -75,21 +90,16 @@ resource "aws_iam_policy" "dynamodb_access" {
 
 # 2. Use the official AWS module to easily create the IRSA Role
 module "iam_eks_role" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.0"
-
+  source    = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version   = "~> 5.0"
   role_name = "prima-flask-app-role"
-
-  # Attach the DynamoDB policy we just created
   role_policy_arns = {
     dynamodb = aws_iam_policy.dynamodb_access.arn
   }
-
-  # Bind this role to a specific Kubernetes ServiceAccount via OIDC
   oidc_providers = {
     main = {
-      provider_arn = module.eks.oidc_provider_arn
-      # Format: "namespace:service-account-name"
+      # Use the dynamically constructed ARN from the local variables above
+      provider_arn               = local.oidc_provider_arn
       namespace_service_accounts = ["default:flask-app-sa"]
     }
   }
