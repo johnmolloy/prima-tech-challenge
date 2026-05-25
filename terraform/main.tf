@@ -67,7 +67,7 @@ resource "aws_iam_policy" "dynamodb_access" {
           "dynamodb:GetItem"
         ]
         # References the table you created earlier
-        Resource = aws_dynamodb_table.app_state.arn 
+        Resource = aws_dynamodb_table.app_state.arn
       }
     ]
   })
@@ -75,9 +75,9 @@ resource "aws_iam_policy" "dynamodb_access" {
 
 # 2. Use the official AWS module to easily create the IRSA Role
 module "iam_eks_role" {
-  source    = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version   = "~> 5.0"
-  
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 5.0"
+
   role_name = "prima-flask-app-role"
 
   # Attach the DynamoDB policy we just created
@@ -88,7 +88,7 @@ module "iam_eks_role" {
   # Bind this role to a specific Kubernetes ServiceAccount via OIDC
   oidc_providers = {
     main = {
-      provider_arn               = module.eks.oidc_provider_arn
+      provider_arn = module.eks.oidc_provider_arn
       # Format: "namespace:service-account-name"
       namespace_service_accounts = ["default:flask-app-sa"]
     }
