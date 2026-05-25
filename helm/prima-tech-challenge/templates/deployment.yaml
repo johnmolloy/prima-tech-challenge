@@ -30,3 +30,15 @@ spec:
               value: "prima-tech-challenge-data-ff32d1ad"
             - name: PYTHONUNBUFFERED
               value: "1"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10

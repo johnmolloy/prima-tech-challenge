@@ -20,6 +20,13 @@ s3_bucket = os.getenv('S3_BUCKET_NAME')
 def hello_world():
     return "Hello John"
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    # Ideally this would check for DynamoDB connection. And S3 bucket access. + maybe also display some metrics too. 
+    # Like we could add some stats, and also the ENV config of the app if its a dev environment, for easy diagnosis of problems
+    # But I already spent a lot of time on this.... so we are just going to return a 200
+    return jsonify({"status": "healthy"}), 200
+
 @app.route('/users', methods=['POST'])
 def create_user():
     # 1. Validate that an image file is attached
