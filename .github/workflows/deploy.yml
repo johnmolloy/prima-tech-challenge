@@ -75,15 +75,41 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push Docker image
+      # ---------------------------------------------------
+      # 1. Build the Image 
+      # ---------------------------------------------------
+      - name: Build Docker image
         id: build-image
-        # Tell the runner to execute the commands inside your app folder
         working-directory: ./app_code
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+
+      # ---------------------------------------------------
+      # 2. Container Security Scan 
+      # ---------------------------------------------------
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          # Tell Trivy to scan the image we just built locally
+          image-ref: '${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'                     # Fail the pipeline if vulnerabilities are found
+          ignore-unfixed: true               # Ignore vulnerabilities that don't have a patch available yet
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      # ---------------------------------------------------
+      # Push to ECR
+      # ---------------------------------------------------
+      - name: Push Docker image to Amazon ECR
+        working-directory: ./app_code
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
