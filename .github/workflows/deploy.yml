@@ -9,6 +9,8 @@ env:
   AWS_REGION: eu-west-1
   ECR_REPOSITORY: prima-tech-challenge
   EKS_CLUSTER_NAME: prima-eks-cluster
+  # Force all actions to use the updated Node 24 runtime to clear the deprecation warning
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 permissions:
   id-token: write
