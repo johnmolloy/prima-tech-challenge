@@ -99,7 +99,7 @@ resource "aws_iam_policy" "app_access" {
         Resource = aws_dynamodb_table.app_state.arn
       },
       {
-        Effect = "Allow"
+        Effect   = "Allow"
         Action   = ["s3:PutObject", "s3:GetObject"]
         Resource = "${aws_s3_bucket.app_data.arn}/*"
       }
