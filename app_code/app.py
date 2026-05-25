@@ -37,19 +37,11 @@ def get_all_users():
         # Strip out password hash and ensure we don't include it
         safe_users = []
         for user in users:
-            image_key = user.get('profile_image_key')
-            avatar_url = None
-            
-            # If the user has an image, build the full AWS S3 URL
-            if image_key:
-                avatar_url = f"https://{s3_bucket}.s3.{region}.amazonaws.com/{image_key}"
-
             safe_users.append({
                 'id': user.get('id'),
-                'first_name': user.get('first_name'),
-                'last_name': user.get('last_name'),
-                'username': user.get('username'),
-                'avatar_url': avatar_url # Serving the full URL instead of the raw key
+                'name': user.get('name'),
+                'email': user.get('email'),
+                'avatar_url': user.get('avatar_url')
             })
 
         # Return the sanitized list along with a count
@@ -64,7 +56,7 @@ def get_all_users():
 
 @app.route('/users', methods=['POST'])
 def create_user():
-    # 1. Validate that an image file is attached
+    # Validate that an image file is attached
     if 'image' not in request.files:
         return jsonify({"error": "No image file provided"}), 400
     
@@ -72,14 +64,13 @@ def create_user():
     if image_file.filename == '':
         return jsonify({"error": "Empty image filename"}), 400
 
-    # 2. Extract text fields from the form data (not JSON anymore)
-    first_name = request.form.get('first_name')
-    last_name = request.form.get('last_name')
-    username = request.form.get('username')
+    # Extract text fields from the form data
+    name = request.form.get('name')
+    email = request.form.get('email')
     password = request.form.get('password')
 
-    if not all([first_name, last_name, username, password]):
-        return jsonify({"error": "Missing required text fields"}), 400
+    if not all([name, email, password]):
+        return jsonify({"error": "Missing name, email, or password"}), 400
 
     user_id = str(uuid.uuid4())
     hashed_password = generate_password_hash(password)
@@ -98,22 +89,23 @@ def create_user():
             ExtraArgs={"ContentType": image_file.content_type}
         )
 
+        avatar_url = f"https://{s3_bucket}.s3.{region}.amazonaws.com/{s3_key}"
+
         # 5. Write the user data AND the S3 reference to DynamoDB
         table.put_item(
             Item={
                 'id': user_id,
-                'first_name': first_name,
-                'last_name': last_name,
-                'username': username,
+                'name': name,
+                'email': email,
                 'password_hash': hashed_password,
-                'profile_image_key': s3_key # Store where to find the image
+                'avatar_url': avatar_url
             }
         )
         
         return jsonify({
-            "message": "User and image created successfully",
+            "message": "User created successfully",
             "id": user_id,
-            "image_location": s3_key
+            "avatar_url": avatar_url
         }), 201
 
     except Exception as e:
