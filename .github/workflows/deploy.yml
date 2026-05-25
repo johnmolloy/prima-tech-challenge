@@ -154,6 +154,32 @@ jobs:
             --set image.tag=$IMAGE_TAG \
             --wait
 
+      # ---------------------------------------------------
+      # Retrieve and Publish the Load Balancer URL
+      # ---------------------------------------------------
+      - name: Get API URL
+        run: |
+          echo "Waiting for AWS to provision the Load Balancer DNS..."
+          
+          # Set the name of the Kubernetes Service deployed by Helm
+          # (Update this if your Helm chart names the Service differently)
+          SVC_NAME="prima-tech-challenge-release" 
+          
+          LB_HOSTNAME=""
+          # Loop until AWS populates the hostname field
+          while [ -z "$LB_HOSTNAME" ]; do
+            sleep 10
+            LB_HOSTNAME=$(kubectl get svc $SVC_NAME -n default -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+          done
+          
+          echo "========================================="
+          echo "🎉 API IS LIVE AT: http://$LB_HOSTNAME"
+          echo "========================================="
+          
+          # Write the URL out to the GitHub Actions UI Summary screen
+          echo "### 🚀 Deployment Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "**API URL:** [http://$LB_HOSTNAME](http://$LB_HOSTNAME)" >> $GITHUB_STEP_SUMMARY
+          echo "**Users Endpoint:** [http://$LB_HOSTNAME/users](http://$LB_HOSTNAME/users)" >> $GITHUB_STEP_SUMMARY
 
   # ---------------------------------------------------
   # Bandit SAST Scanner (Runs in parallel)
