@@ -27,6 +27,35 @@ def health_check():
     # But I already spent a lot of time on this.... so we are just going to return a 200
     return jsonify({"status": "healthy"}), 200
 
+@app.route('/users', methods=['GET'])
+def get_all_users():
+    try:
+        # Uses DynamoDB table scan. This is expensive and slow. Would be nice to use pagination in a proper app
+        response = table.scan()
+        users = response.get('Items', [])
+
+        # Strip out password hash and ensure we don't include it
+        safe_users = []
+        for user in users:
+            safe_users.append({
+                'id': user.get('id'),
+                'first_name': user.get('first_name'),
+                'last_name': user.get('last_name'),
+                'username': user.get('username'),
+                # Using .get() prevents crashes if a user was created before we added images
+                'profile_image_key': user.get('profile_image_key') 
+            })
+
+        # Return the sanitized list along with a count
+        return jsonify({
+            "count": len(safe_users),
+            "users": safe_users
+        }), 200
+
+    except Exception as e:
+        print(f"Database read error: {str(e)}")
+        return jsonify({"error": "Failed to retrieve users"}), 500
+
 @app.route('/users', methods=['POST'])
 def create_user():
     # 1. Validate that an image file is attached
