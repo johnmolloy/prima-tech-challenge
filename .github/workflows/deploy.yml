@@ -127,3 +127,39 @@ jobs:
             --set image.repository=$ECR_REGISTRY/$ECR_REPOSITORY \
             --set image.tag=$IMAGE_TAG \
             --wait
+
+
+# ---------------------------------------------------
+  # CodeQL SAST Scanner (Runs in parallel)
+  # ---------------------------------------------------
+  analyze-code:
+    name: CodeQL Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write # Critical: Allows CodeQL to post to the Security tab
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'python' ]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          # You can specify custom queries here if needed, 
+          # but the default suite is excellent.
+
+      # CodeQL normally requires a build step for compiled languages (C++, Java).
+      # Since we are using Python, we skip the build and go straight to analysis.
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
