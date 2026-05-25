@@ -39,12 +39,12 @@ resource "aws_s3_bucket_versioning" "app_data_versioning" {
 # ---------------------------------------------------
 resource "aws_dynamodb_table" "app_state" {
   name = "prima-user-db"
-  
+
   # Utilizing the AWS Free Tier (Max 25 RCU / 25 WCU per month)
   billing_mode   = "PROVISIONED"
   read_capacity  = 5
   write_capacity = 5
-  
+
   hash_key = "id"
 
   attribute {
